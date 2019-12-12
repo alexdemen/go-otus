@@ -42,7 +42,7 @@ func TestRepeatRune(t *testing.T)  {
 
 	for _, curCase := range testCases{
 		runes = make([]rune, 0, curCase.count)
-		repeatRune(&runes, curCase.symbol, curCase.count)
+		runes = repeatRune(runes, curCase.symbol, curCase.count)
 
 		if len(runes) != curCase.count{
 			t.Errorf("The expected length value does not match. Count: %d, symbol: %c", curCase.count, curCase.symbol)

@@ -30,10 +30,10 @@ func unpack(str string) (string, error) {
 		if unicode.IsLetter(curRune) || escaping {
 			if next := i + 1; next < len(runes) && unicode.IsDigit(runes[next]) {
 				repeat, _ := strconv.Atoi(string(runes[next]))
-				repeatRune(&res, curRune, repeat)
+				res = repeatRune(res, curRune, repeat)
 				i++
 			} else {
-				repeatRune(&res, curRune, 1)
+				res = repeatRune(res, curRune, 1)
 			}
 			escaping = false
 		} else if curRune == '\\' {
@@ -46,8 +46,10 @@ func unpack(str string) (string, error) {
 	return string(res), nil
 }
 
-func repeatRune(dst *[]rune, symbol rune, count int) {
+func repeatRune(dst []rune, symbol rune, count int) []rune {
+	res := append(dst)
 	for ; count != 0; count-- {
-		*dst = append(*dst, symbol)
+		res = append(res, symbol)
 	}
+	return res
 }
