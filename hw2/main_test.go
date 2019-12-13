@@ -30,27 +30,27 @@ func TestUnpack(t *testing.T) {
 	}
 }
 
-func TestRepeatRune(t *testing.T)  {
-	testCases := []struct{
-		count int
+func TestRepeatRune(t *testing.T) {
+	testCases := []struct {
+		count  int
 		symbol rune
 	}{
 		{2, 't'},
 	}
 
-	var runes []rune = nil
+	var runes []rune
 
-	for _, curCase := range testCases{
+	for _, curCase := range testCases {
 		runes = make([]rune, 0, curCase.count)
 		runes = repeatRune(runes, curCase.symbol, curCase.count)
 
-		if len(runes) != curCase.count{
+		if len(runes) != curCase.count {
 			t.Errorf("The expected length value does not match. Count: %d, symbol: %c", curCase.count, curCase.symbol)
 			continue
 		}
 
-		for i := 0; i < len(runes); i++{
-			if runes[i] != curCase.symbol{
+		for i := 0; i < len(runes); i++ {
+			if runes[i] != curCase.symbol {
 				t.Errorf("The expected symbol does not match. Count: %d, symbol: %c", curCase.count, curCase.symbol)
 				break
 			}

@@ -22,7 +22,7 @@ func main() {
 
 func unpack(str string) (string, error) {
 	runes := []rune(str)
-	res := make([]rune, 0, len(runes))
+	res := make([]rune, 0)
 	escaping := false
 
 	for i := 0; i < len(runes); i++ {
@@ -47,7 +47,7 @@ func unpack(str string) (string, error) {
 }
 
 func repeatRune(dst []rune, symbol rune, count int) []rune {
-	res := append(dst)
+	res := dst
 	for ; count != 0; count-- {
 		res = append(res, symbol)
 	}
