@@ -10,11 +10,13 @@ type wordStat struct{
 	count int
 }
 
-func top10(text string) []string {
-	return top(text, 10)
+func Top10(text string) []string {
+	return Top(text, 10)
 }
 
-func top(text string, topCount int) (res []string) {
+func Top(text string, topCount int) (res []string) {
+	res = make([]string, 0, topCount)
+
 	words := prepareText(text)
 	wordCounter := wordsCount(words)
 
@@ -24,7 +26,7 @@ func top(text string, topCount int) (res []string) {
 	}
 
 	sort.Slice(statistics, func(i,j int) bool{
-		return statistics[i].count < statistics[j].count
+		return statistics[i].count > statistics[j].count
 	})
 
 	for index, val := range statistics{

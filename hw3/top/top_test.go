@@ -19,3 +19,19 @@ func TestPrepareText(t *testing.T) {
 		}
 	}
 }
+
+func TestTop(t *testing.T){
+	testCases := []struct{
+		input string
+		count int
+		output []string
+	}{
+		{"1 1 1 2 2 3 3 4", 3, []string{"one", "two", "apple"}},
+	}
+
+	for _, testCase := range testCases{
+		res := top(testCase.input, testCase.count)
+
+
+	}
+}
