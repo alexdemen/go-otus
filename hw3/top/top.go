@@ -53,9 +53,21 @@ func wordsCount(words []string) map[string]int {
 func prepareText(text string) (res []string) {
 	words := strings.Split(strings.ToLower(text), " ")
 	res = words
-	//for _, val := range words {
-	//	res = append(res, val)
-	//}
+	for _, val := range words {
+		word := removePunctuation(val)
 
+		if len(word) > 0 {
+			res = append(res, word)
+		}
+	}
+
+	return
+}
+
+func removePunctuation(s string) (res string) {
+	res = s
+	for ; strings.HasSuffix(res, ".") || strings.HasSuffix(res, ",") || strings.HasSuffix(res, "-");{
+		res = res[:len(res) - 1]
+	}
 	return
 }

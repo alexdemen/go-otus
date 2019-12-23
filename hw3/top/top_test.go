@@ -1,6 +1,9 @@
 package top
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestPrepareText(t *testing.T) {
 	testCases := []struct {
@@ -26,12 +29,12 @@ func TestTop(t *testing.T){
 		count int
 		output []string
 	}{
-		{"1 1 1 2 2 3 3 4", 3, []string{"one", "two", "apple"}},
+		{"1 1, - - - - - -  1 2 2 3 3 4", 3, []string{"one", "two", "apple"}},
 	}
 
 	for _, testCase := range testCases{
-		res := top(testCase.input, testCase.count)
+		res := Top(testCase.input, testCase.count)
 
-
+		fmt.Println(res)
 	}
 }
