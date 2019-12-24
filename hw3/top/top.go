@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-type wordStat struct{
-	word string
+type wordStat struct {
+	word  string
 	count int
 }
 
@@ -21,15 +21,15 @@ func Top(text string, topCount int) (res []string) {
 	wordCounter := wordsCount(words)
 
 	var statistics []wordStat
-	for word, count := range wordCounter{
+	for word, count := range wordCounter {
 		statistics = append(statistics, wordStat{word, count})
 	}
 
-	sort.Slice(statistics, func(i,j int) bool{
+	sort.Slice(statistics, func(i, j int) bool {
 		return statistics[i].count > statistics[j].count
 	})
 
-	for index, val := range statistics{
+	for index, val := range statistics {
 		if index >= topCount {
 			break
 		}
@@ -43,7 +43,7 @@ func Top(text string, topCount int) (res []string) {
 func wordsCount(words []string) map[string]int {
 	res := make(map[string]int)
 
-	for _, val := range words{
+	for _, val := range words {
 		res[val]++
 	}
 
@@ -52,7 +52,6 @@ func wordsCount(words []string) map[string]int {
 
 func prepareText(text string) (res []string) {
 	words := strings.Split(strings.ToLower(text), " ")
-	res = words
 	for _, val := range words {
 		word := removePunctuation(val)
 
@@ -66,8 +65,8 @@ func prepareText(text string) (res []string) {
 
 func removePunctuation(s string) (res string) {
 	res = s
-	for ; strings.HasSuffix(res, ".") || strings.HasSuffix(res, ",") || strings.HasSuffix(res, "-");{
-		res = res[:len(res) - 1]
+	for strings.HasSuffix(res, ".") || strings.HasSuffix(res, ",") || strings.HasSuffix(res, "-") {
+		res = res[:len(res)-1]
 	}
 	return
 }
