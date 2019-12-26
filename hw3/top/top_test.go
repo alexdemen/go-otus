@@ -10,7 +10,7 @@ func TestPrepareText(t *testing.T) {
 		input  string
 		output []string
 	}{
-		{"Test one - success.", []string{"test", "one", "-", "success"}},
+		{"Test one - success.", []string{"test", "one", "success"}},
 	}
 
 	var res []string
@@ -23,17 +23,29 @@ func TestPrepareText(t *testing.T) {
 	}
 }
 
-func TestTop(t *testing.T){
-	testCases := []struct{
-		input string
-		count int
+func TestTop(t *testing.T) {
+	testCases := []struct {
+		input  string
+		count  int
 		output []string
 	}{
-		{"1 1, - - - - - -  1 2 2 3 3 4", 3, []string{"one", "two", "apple"}},
+		{"one two two three three three", 2, []string{"three", "two"}},
+		{"one two two. - three - three, - three", 2, []string{"three", "two"}},
 	}
 
-	for _, testCase := range testCases{
+	for _, testCase := range testCases {
 		res := Top(testCase.input, testCase.count)
+
+		if len(res) != len(testCase.output) {
+			t.Errorf("Тест завершился неудачей при входном значении - \"%s\"", testCase.input)
+			continue
+		}
+
+		for index, val := range res {
+			if val != testCase.output[index] {
+				t.Errorf("Тест завершился неудачей при входном значении - \"%s\"", testCase.input)
+			}
+		}
 
 		fmt.Println(res)
 	}
