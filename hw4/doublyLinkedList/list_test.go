@@ -5,13 +5,13 @@ import "testing"
 func TestList_First(t *testing.T) {
 	list := List{}
 
-	if list.len != 0 || list.first != nil || list.last != nil {
+	if list.Len() != 0 || list.first != nil || list.last != nil {
 		t.Errorf("Ошибка инициализации списка.")
 	}
 
 	list.PushFront("first")
 
-	if list.len == 0 || list.first == nil || list.last == nil {
+	if list.Len() == 0 || list.first == nil || list.last == nil {
 		t.Errorf("Ошибка добавления первого элемента.")
 	}
 
