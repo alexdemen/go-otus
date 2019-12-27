@@ -38,6 +38,7 @@ func (l *List) PushFront(v interface{}) {
 	} else {
 		newItem := &Item{data: v, next: first}
 		first.prev = newItem
+		l.first = newItem
 	}
 	l.len++
 }
@@ -50,6 +51,7 @@ func (l *List) PushBack(v interface{}) {
 	} else {
 		newItem := &Item{data: v, prev: prev}
 		prev.next = newItem
+		l.last = newItem
 	}
 	l.len++
 }
