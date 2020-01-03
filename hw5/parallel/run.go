@@ -13,16 +13,21 @@ func handleTasks(tasks []func() error, parallelTasksCount, maxErrCount int) <-ch
 		go handleTask(taskChan, taskCompleted)
 	}
 
-	return processTasks(taskCompleted, maxErrCount, tasks, taskChan)
+	return processTasks(taskChan, taskCompleted, maxErrCount, tasks)
 }
 
-func processTasks(taskCompleted chan error, maxErrCount int, tasks []func() error, taskChan chan func() error) chan struct{} {
+func processTasks(taskChan chan func() error,
+	taskCompleted chan error,
+	maxErrCount int,
+	tasks []func() error) chan struct{} {
+
 	done := make(chan struct{})
 
 	go func() {
 		var errCount, taskCount int
 		var curTaskId int
 		var isEnd bool
+
 	taskLoop:
 		for {
 			select {
