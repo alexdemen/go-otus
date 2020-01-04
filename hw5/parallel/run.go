@@ -1,10 +1,10 @@
 package parallel
 
 func Run(task []func() error, N int, M int) {
-	<-runTasksProcessing(task, N, M)
+	runTasksProcessing(task, N, M)
 }
 
-func runTasksProcessing(tasks []func() error, parallelTasksCount, maxErrCount int) <-chan struct{} {
+func runTasksProcessing(tasks []func() error, parallelTasksCount, maxErrCount int) {
 
 	taskChan := make(chan func() error)
 	taskCompleted := make(chan error)
@@ -13,48 +13,41 @@ func runTasksProcessing(tasks []func() error, parallelTasksCount, maxErrCount in
 		go handleTask(taskChan, taskCompleted)
 	}
 
-	return processTasks(taskChan, taskCompleted, maxErrCount, tasks)
+	processTasks(taskChan, taskCompleted, maxErrCount, tasks)
 }
 
 func processTasks(taskChan chan func() error, taskCompleted chan error,
-	maxErrCount int, tasks []func() error) chan struct{} {
+	maxErrCount int, tasks []func() error) {
 
-	done := make(chan struct{})
+	var errCount, taskCount int
+	var curTaskId int
+	var isEnd bool
 
-	go func() {
-		var errCount, taskCount int
-		var curTaskId int
-		var isEnd bool
+taskLoop:
+	for {
+		select {
+		case err := <-taskCompleted:
+			if err != nil {
+				errCount++
+			}
+			taskCount++
 
-	taskLoop:
-		for {
-			select {
-			case err := <-taskCompleted:
-				if err != nil {
-					errCount++
-				}
-				taskCount++
+			if !isEnd && (errCount >= maxErrCount || taskCount == len(tasks)) {
+				close(taskChan)
+				isEnd = true
+			}
 
-				if !isEnd && (errCount >= maxErrCount || taskCount == len(tasks)) {
-					close(taskChan)
-					isEnd = true
-				}
+			if taskCount == curTaskId && isEnd {
+				break taskLoop
+			}
 
-				if taskCount == curTaskId && isEnd {
-					break taskLoop
-				}
-
-			default:
-				if curTaskId < len(tasks) && !isEnd {
-					sendTask(&curTaskId, tasks[curTaskId], taskChan)
-				}
+		default:
+			if curTaskId < len(tasks) && !isEnd {
+				sendTask(&curTaskId, tasks[curTaskId], taskChan)
 			}
 		}
+	}
 
-		close(done)
-	}()
-
-	return done
 }
 
 func sendTask(curTaskId *int, task func() error, taskChan chan func() error) {
