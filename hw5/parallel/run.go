@@ -1,10 +1,10 @@
 package parallel
 
 func Run(task []func() error, N int, M int) {
-	<-handleTasks(task, N, M)
+	<-runTasksProcessing(task, N, M)
 }
 
-func handleTasks(tasks []func() error, parallelTasksCount, maxErrCount int) <-chan struct{} {
+func runTasksProcessing(tasks []func() error, parallelTasksCount, maxErrCount int) <-chan struct{} {
 
 	taskChan := make(chan func() error)
 	taskCompleted := make(chan error)
@@ -16,10 +16,8 @@ func handleTasks(tasks []func() error, parallelTasksCount, maxErrCount int) <-ch
 	return processTasks(taskChan, taskCompleted, maxErrCount, tasks)
 }
 
-func processTasks(taskChan chan func() error,
-	taskCompleted chan error,
-	maxErrCount int,
-	tasks []func() error) chan struct{} {
+func processTasks(taskChan chan func() error, taskCompleted chan error,
+	maxErrCount int, tasks []func() error) chan struct{} {
 
 	done := make(chan struct{})
 
@@ -37,7 +35,7 @@ func processTasks(taskChan chan func() error,
 				}
 				taskCount++
 
-				if !isEnd && (errCount > maxErrCount || taskCount == len(tasks)) {
+				if !isEnd && (errCount >= maxErrCount || taskCount == len(tasks)) {
 					close(taskChan)
 					isEnd = true
 				}

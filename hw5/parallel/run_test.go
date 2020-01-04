@@ -2,44 +2,63 @@ package parallel
 
 import (
 	"errors"
-	"fmt"
+	"sync/atomic"
 	"testing"
-	"time"
 )
 
+func TestHandleTask(t *testing.T){
+	input := make(chan func() error)
+	output := make(chan error)
+	go handleTask(input, output)
+
+	input <- func() error {
+		return nil
+	}
+
+	if err := <- output; err != nil{
+		t.Errorf("Получено неожиоданное значение.")
+	}
+
+	input <- func() error {
+		return errors.New("test")
+	}
+
+	if err := <- output; err == nil{
+		t.Errorf("Получено неожиоданное значение.")
+	}
+}
+
 func TestRun(t *testing.T) {
-	tasks := []func() error{
-		func() error {
-			time.Sleep(1 * time.Second)
-			fmt.Println("task one")
-			return nil
-		},
-		func() error {
-			time.Sleep(1 * time.Second)
-			fmt.Println("task two")
-			return errors.New("")
-		},
-		func() error {
-			time.Sleep(1 * time.Second)
-			fmt.Println("task 3")
-			return nil//errors.New("")
-		},
-		func() error {
-			time.Sleep(1 * time.Second)
-			fmt.Println("task 4")
-			return nil
-		},
-		func() error {
-			time.Sleep(1 * time.Second)
-			fmt.Println("task 5")
-			return nil
-		},
-		func() error {
-			time.Sleep(1 * time.Second)
-			fmt.Println("task 6")
-			return nil
-		},
+	var taskCompleted uint32
+	task := func() error {
+		atomic.AddUint32(&taskCompleted, 1)
+		return nil
+	}
+
+	tasks := []func() error{task, task, task, task, task, task,
 	}
 
 	Run(tasks, 2, 1)
+
+	if len(tasks) != int(taskCompleted){
+		t.Errorf("Неверное количество выполненных задач.")
+	}
+}
+
+func TestSendTask(t *testing.T){
+	var temp int
+	var isCompleted bool
+	taskChan := make(chan func() error)
+	task := func() error {
+		isCompleted = true
+		return nil
+	}
+	go sendTask(&temp, task, taskChan)
+
+	receivedTask := <-taskChan
+	receivedTask()
+
+	if !isCompleted{
+		t.Errorf("Задача не была выполнена.")
+	}
 }
