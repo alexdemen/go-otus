@@ -40,7 +40,11 @@ func TestSendTask(t *testing.T) {
 	go sendTask(&temp, task, taskChan)
 
 	receivedTask := <-taskChan
-	receivedTask()
+	err := receivedTask()
+
+	if err != nil {
+		t.Errorf("Ошибка в возвращаемом значении задачи.")
+	}
 
 	if !isCompleted {
 		t.Errorf("Задача не была выполнена.")
@@ -54,8 +58,7 @@ func TestRun(t *testing.T) {
 		return nil
 	}
 
-	tasks := []func() error{task, task, task, task, task, task,
-	}
+	tasks := []func() error{task, task, task, task, task, task}
 
 	Run(tasks, 2, 1)
 
