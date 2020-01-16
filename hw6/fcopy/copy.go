@@ -1,38 +1,51 @@
 package main
 
-import "os"
+import (
+	"io"
+	"os"
+)
 
-func copy(src, dst string, offset, limit int) error {
-
-	return nil
-}
-
-func readFile(path string, offset int64, limit int) (chan []byte, error) {
-	file, err := os.Open(path)
+func copyFile(src, dst string, offset, limit int) error {
+	srcFile, err := os.OpenFile(src, os.O_RDONLY, 0775)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	defer file.Close()
-
-	if offset > 0 {
-		_, err := file.Seek(offset, 0)
-		return nil, err
+	defer srcFile.Close()
+	dstFile, err := os.Create(src)
+	if err != nil {
+		return err
 	}
+	defer dstFile.Close()
 
-	data := make(chan []byte)
-	go func() {
-		blockSize := 1024 * 1024
-		if limit != -1 && limit < blockSize {
-			blockSize = limit
+	blockSize := 1024 * 1024
+
+	var readerCount int
+	buffer := make([]byte, 0, blockSize)
+
+	for isEnd := false; !isEnd && (readerCount < limit || limit == -1); {
+
+		if limit != -1 && readerCount+blockSize > limit {
+			blockSize = limit - readerCount
+			buffer = make([]byte, 0, blockSize)
 		}
-		dataBlock := make([]byte, 0, blockSize)
-		for {
-			file.Read(dataBlock)
-			select {
-			case data <- dataBlock:
+
+		readSize, err := srcFile.ReadAt(buffer, int64(offset))
+		if err != nil {
+			if err == io.EOF {
+				isEnd = true
+			} else {
+				return err
 			}
 		}
-	}()
 
-	return data, nil
+		_, err = dstFile.Write(buffer)
+		if err != nil {
+			return err
+		}
+
+		buffer = buffer[:0]
+		readerCount += readSize
+	}
+
+	return nil
 }
