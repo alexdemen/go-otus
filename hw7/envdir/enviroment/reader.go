@@ -27,5 +27,9 @@ func ReadDir(dir string) (map[string]string, error) {
 }
 
 func readFile(file string) (string, error) {
-	return "", nil
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }
