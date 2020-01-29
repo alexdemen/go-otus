@@ -12,6 +12,7 @@ func RunCmd(cmd []string, env map[string]string) int {
 	command.Stdin = os.Stdin
 
 	if err := command.Run(); err != nil {
+		return 1
 	}
 
 	return 0

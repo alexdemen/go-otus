@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -12,6 +11,7 @@ func main() {
 		log.Fatal("Не задана переменная для вывода.")
 	}
 
-	fmt.Println(os.Getenv(os.Args[1]))
-	ioutil.WriteFile("test", []byte(os.Getenv(os.Args[1])), os.ModePerm)
+	for _, key := range os.Args[1:] {
+		fmt.Println(key + "=" + os.Getenv(key))
+	}
 }
