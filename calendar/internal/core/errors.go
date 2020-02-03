@@ -2,16 +2,8 @@ package core
 
 import "errors"
 
-type ErrEventNotExist struct{}
+var ErrEventNotExist = errors.New("event not exist")
 
-type ErrNoEvents struct{}
-
-func (n ErrNoEvents) Error() string {
-	return "No events."
-}
-
-func (e ErrEventNotExist) Error() string {
-	return "Event not exist."
-}
+var ErrNoEvents = errors.New("no events")
 
 var ErrDateBusy = errors.New("this time is busy")

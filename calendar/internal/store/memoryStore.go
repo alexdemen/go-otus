@@ -32,7 +32,7 @@ func (m *memoryStore) Edit(event core.Event) error {
 		return core.ErrDateBusy
 	}
 	if _, ok := m.events[event.Id]; !ok {
-		return core.ErrEventNotExist{}
+		return core.ErrEventNotExist
 	}
 
 	m.events[event.Id] = event
@@ -41,7 +41,7 @@ func (m *memoryStore) Edit(event core.Event) error {
 
 func (m *memoryStore) Remove(event core.Event) error {
 	if _, ok := m.events[event.Id]; !ok {
-		return core.ErrEventNotExist{}
+		return core.ErrEventNotExist
 	}
 	delete(m.events, event.Id)
 	return nil
@@ -49,7 +49,7 @@ func (m *memoryStore) Remove(event core.Event) error {
 
 func (m memoryStore) List() ([]core.Event, error) {
 	if len(m.events) == 0 {
-		return nil, core.ErrNoEvents{}
+		return nil, core.ErrNoEvents
 	}
 	res := make([]core.Event, 0, len(m.events))
 	for _, val := range m.events {
