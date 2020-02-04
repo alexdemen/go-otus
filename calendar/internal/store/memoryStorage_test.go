@@ -162,3 +162,31 @@ func TestMemoryStore_RemoveInEmptyList(t *testing.T) {
 		t.Fatal("Error deleting event in empty list.")
 	}
 }
+
+func TestMemoryStore_Edit(t *testing.T) {
+	storage := NewMemoryStore()
+
+	testEvent := core.Event{Name: "test",
+		StartDate:  time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC),
+		FinishDate: time.Date(2020, 1, 1, 2, 0, 0, 0, time.UTC)}
+
+	err := storage.Add(&testEvent)
+	if err != nil {
+		t.Fatal("Error in method Add.")
+	}
+
+	testEvent.Name = "new"
+
+	err = storage.Edit(testEvent)
+	if err != nil {
+		t.Fatal("Error in method Edit.")
+	}
+
+	if val, ok := storage.events[testEvent.Id]; ok {
+		if val.Name != testEvent.Name {
+			t.Fatal("Error editing event.")
+		}
+	} else {
+		t.Fatal("Could not find event.")
+	}
+}
