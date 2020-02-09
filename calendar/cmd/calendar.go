@@ -20,9 +20,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	logger := middleware.Logger{}
+	middleware.ConfigureLogger("", middleware.Error)
 
-	handler := logger.SetLogger(http.HandlerFunc(resolvePath))
+	handler := middleware.SetLogger(http.HandlerFunc(resolvePath))
 	if err := http.ListenAndServe(runConfig.ListenAddress, handler); err != nil {
 		fmt.Println(err)
 	}
@@ -34,6 +34,6 @@ func resolvePath(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello world!"))
 		return
 	default:
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 	}
 }
