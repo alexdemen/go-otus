@@ -1,0 +1,6 @@
+time="2020-02-10T10:06:47+03:00" level=info fields.time="2020-02-10 10:06:47.6828742 +0300 MSK m=+15.035369201" path=/hello
+time="2020-02-10T10:06:48+03:00" level=info fields.time="2020-02-10 10:06:48.8131067 +0300 MSK m=+16.165601701" path=/hello
+time="2020-02-10T10:06:49+03:00" level=info fields.time="2020-02-10 10:06:49.6311044 +0300 MSK m=+16.983599401" path=/hello
+time="2020-02-10T10:06:49+03:00" level=info fields.time="2020-02-10 10:06:49.9991058 +0300 MSK m=+17.351600801" path=/hello
+time="2020-02-10T10:06:50+03:00" level=info fields.time="2020-02-10 10:06:50.1931296 +0300 MSK m=+17.545624601" path=/hello
+time="2020-02-10T10:06:50+03:00" level=info fields.time="2020-02-10 10:06:50.3811099 +0300 MSK m=+17.733604901" path=/hello
