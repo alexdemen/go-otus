@@ -1,53 +1,26 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
+	"io"
 	"log"
 	"net"
+	"os"
 )
 
-func handleConnection(conn net.Conn) {
-	defer conn.Close()
-	conn.Write([]byte(fmt.Sprintf("Welcome to %s, friend from %s\n", conn.LocalAddr(), conn.RemoteAddr())))
-
-	scanner := bufio.NewScanner(conn)
-	for scanner.Scan() {
-		text := scanner.Text()
-		log.Printf("RECEIVED: %s", text)
-		if text == "quit" || text == "exit" {
-			break
-		}
-
-		conn.Write([]byte(fmt.Sprintf("I have received '%s'\n", text)))
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Printf("Error happend on connection with %s: %v", conn.RemoteAddr(), err)
-	}
-
-	log.Printf("Closing connection with %s", conn.RemoteAddr())
-
-}
-
-//TODO multithread
-
 func main() {
-	l, err := net.Listen("tcp", "0.0.0.0:3302")
+	l, err := net.Listen("tcp", "localhost:3302")
 	if err != nil {
-		log.Fatalf("Cannot listen: %v", err)
+		log.Fatal(err)
 	}
 	defer l.Close()
-
-	fmt.Println("hello")
 	for {
 		conn, err := l.Accept()
 		if err != nil {
-			log.Fatalf("Cannot accept: %v", err)
+			log.Fatal(err)
 		}
-
-		//handleConnection(conn)
-		go handleConnection(conn)
-
+		go func(c net.Conn) {
+			defer c.Close()
+			io.Copy(os.Stdout, c)
+		}(conn)
 	}
 }
