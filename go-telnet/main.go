@@ -9,7 +9,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"os/signal"
 	"time"
 )
 
@@ -17,32 +16,38 @@ func main() {
 	timeout := pflag.Int("timeout", 10, "connection timeout")
 	pflag.Parse()
 
-	//TODO проверка наличия
-	addr := os.Args[len(os.Args)-2]
-	port := os.Args[len(os.Args)-1]
+	argCount := len(os.Args)
+	if argCount < 3 {
+		log.Fatal("incorrect count of args")
+	}
+	addr := os.Args[argCount-2]
+	port := os.Args[argCount-1]
 
-	ctxTimeout, _ := context.WithTimeout(context.Background(), time.Duration(*timeout)*time.Second)
-
-	dialer := &net.Dialer{}
-	conn, err := dialer.DialContext(ctxTimeout, "tcp", addr+":"+port)
+	conn, err := net.DialTimeout("tcp", addr+":"+port, time.Duration(*timeout)*time.Second)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close()
 
-	done := make(chan os.Signal)
-	signal.Notify(done, os.Interrupt)
+	ctxCancel, cancel := context.WithCancel(context.Background())
 
-	ctxCancel, _ := context.WithCancel(context.Background())
-	handleConn(ctxCancel, conn)
+	handleConn(ctxCancel, conn, cancel)
+
+	<-ctxCancel.Done()
 }
 
-func handleConn(ctx context.Context, conn net.Conn) {
-	go write(ctx, conn, streamReader(os.Stdin))
-	go read(ctx, conn)
+func handleConn(ctx context.Context, conn net.Conn, cancel context.CancelFunc) {
+	go write(ctx, conn, streamReader(os.Stdin, cancel))
+
+	go func() {
+		err := read(ctx, conn, streamReader(conn, cancel))
+		if err != nil {
+			cancel()
+		}
+	}()
 }
 
-func streamReader(reader io.Reader) chan string{
+func streamReader(reader io.Reader, cancel context.CancelFunc) chan string {
 	dataChan := make(chan string)
 
 	go func() {
@@ -50,6 +55,7 @@ func streamReader(reader io.Reader) chan string{
 
 		for {
 			if !scanner.Scan() {
+				cancel()
 				break
 			}
 
@@ -61,20 +67,18 @@ func streamReader(reader io.Reader) chan string{
 	return dataChan
 }
 
-func read(ctx context.Context, conn net.Conn) {
-	scanner := bufio.NewScanner(conn)
+func read(ctx context.Context, conn net.Conn, input <-chan string) error {
 
 	for {
 		select {
 		case <-ctx.Done():
-			return
+			return nil
 		default:
-			if !scanner.Scan() {
-				return
+			select {
+			case data := <-input:
+				fmt.Println(data)
+			default:
 			}
-
-			text := scanner.Text()
-			fmt.Println(text)
 		}
 	}
 }
@@ -84,12 +88,15 @@ func write(ctx context.Context, conn net.Conn, input <-chan string) {
 		select {
 		case <-ctx.Done():
 			return
-		case data := <- input:
-			n, err := conn.Write([]byte(data))
-			fmt.Println("writted - ", n)
+		default:
+			select {
+			case data := <-input:
+				_, err := conn.Write([]byte(data))
 
-			if err != nil {
-				return
+				if err != nil {
+					return
+				}
+			default:
 			}
 		}
 	}

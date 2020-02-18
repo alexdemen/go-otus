@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -19,6 +20,7 @@ func main() {
 			log.Fatal(err)
 		}
 		go func(c net.Conn) {
+			fmt.Println("connect")
 			defer c.Close()
 			io.Copy(os.Stdout, c)
 		}(conn)
