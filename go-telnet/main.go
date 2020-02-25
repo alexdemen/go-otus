@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"time"
 )
 
@@ -31,9 +32,17 @@ func main() {
 
 	ctxCancel, cancel := context.WithCancel(context.Background())
 
+	done := make(chan os.Signal)
+	signal.Notify(done, os.Interrupt)
+
 	handleConn(ctxCancel, conn, cancel)
 
-	<-ctxCancel.Done()
+	select {
+	case <-ctxCancel.Done():
+	case <-done:
+		ctxCancel.Done()
+	}
+
 }
 
 func handleConn(ctx context.Context, conn net.Conn, cancel context.CancelFunc) {
