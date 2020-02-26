@@ -2,11 +2,11 @@ syntax = "proto3";
 
 import "event.proto";
 
-option go_package="eventpb";
+option go_package="calendarpb";
 
 service EventService {
     rpc Save (Event) returns (Event);
-    rpc Remove (Event) returns (bool);
+    rpc Remove (Event) returns (Result);
     rpc List (User) returns (EventList);
 }
 
@@ -14,7 +14,12 @@ message EventList{
     repeated Event Events = 1;
 }
 
+message Result{
+    bool Success = 1;
+}
+
 message User{
 
 }
+
 

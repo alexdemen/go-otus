@@ -2,11 +2,14 @@ package main
 
 import (
 	"errors"
-	"fmt"
+	"github.com/alexdemen/go-otus/calendar/internal/calendarpb"
 	"github.com/alexdemen/go-otus/calendar/internal/config"
 	"github.com/alexdemen/go-otus/calendar/internal/middleware"
+	"github.com/alexdemen/go-otus/calendar/internal/service"
 	flag "github.com/spf13/pflag"
+	"google.golang.org/grpc"
 	"log"
+	"net"
 	"net/http"
 )
 
@@ -22,22 +25,32 @@ func main() {
 		log.Fatal(err)
 	}
 
-	level, err := chooseLoggerLevel(runConfig.LogLevel)
+	lis, err := net.Listen("tcp", runConfig.ListenAddress)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to listen %v", err)
 	}
 
-	err = middleware.ConfigureLogger(runConfig.LogFile, level)
-	if err != nil {
-		log.Fatal(err)
-	}
+	grpcServer := grpc.NewServer()
+	eventServer := service.NewEventServer()
+	calendarpb.RegisterEventServiceServer(grpcServer, eventServer)
+	grpcServer.Serve(lis)
 
-	handler := middleware.SetLogger(http.HandlerFunc(resolvePath))
-	if err := http.ListenAndServe(runConfig.ListenAddress, handler); err != nil {
-		fmt.Println(err)
-	}
+	//level, err := chooseLoggerLevel(runConfig.LogLevel)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 
-	middleware.CloseLogger()
+	//err = middleware.ConfigureLogger(runConfig.LogFile, level)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//handler := middleware.SetLogger(http.HandlerFunc(resolvePath))
+	//if err := http.ListenAndServe(runConfig.ListenAddress, handler); err != nil {
+	//	fmt.Println(err)
+	//}
+	//
+	//middleware.CloseLogger()
 }
 
 func resolvePath(w http.ResponseWriter, r *http.Request) {
