@@ -64,8 +64,8 @@ func (m memoryStore) existIntersection(event core.Event) bool {
 	}
 
 	for key, val := range m.events {
-		if (inInterval(event.StartDate, val.StartDate, val.FinishDate) ||
-			inInterval(event.FinishDate, val.StartDate, val.FinishDate)) && event.Id != key {
+		if (inInterval(event.StartDate, val.StartDate, val.Duration) ||
+			inInterval(event.Duration, val.StartDate, val.Duration)) && event.Id != key {
 			return true
 		}
 	}
