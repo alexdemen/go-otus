@@ -13,9 +13,9 @@ type EventServer struct {
 	store core.Store
 }
 
-func NewEventServer(store *core.Store) *EventServer {
-	return &EventServer{
-		store: *store,
+func NewEventServer(store core.Store) EventServer {
+	return EventServer{
+		store: store,
 	}
 }
 
