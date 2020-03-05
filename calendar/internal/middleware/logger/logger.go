@@ -1,6 +1,7 @@
-package middleware
+package logger
 
 import (
+	"errors"
 	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -69,4 +70,19 @@ func SetLogger(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func chooseLoggerLevel(levelName string) (int, error) {
+	switch levelName {
+	case "debug":
+		return Debug, nil
+	case "warn":
+		return Warning, nil
+	case "error":
+		return Error, nil
+	case "info":
+		return Info, nil
+	default:
+		return 0, errors.New("failed to select logger level")
+	}
 }
