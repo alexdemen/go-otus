@@ -27,13 +27,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	grpcServer := grpc.NewServer()
+	storage, err := store.NewPostgres(runConfig.DSN)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	lis, err := net.Listen("tcp", runConfig.ListenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
-	storage := store.NewMemoryStore()
 	var eventServer calendarpb.EventServiceServer = service.NewEventServer(storage)
 	eventServer = logger.NewMiddlewareLogger(eventServer)
 	calendarpb.RegisterEventServiceServer(grpcServer, eventServer)

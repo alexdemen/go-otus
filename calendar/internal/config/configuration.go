@@ -11,6 +11,7 @@ type Configuration struct {
 	ListenAddress string `yaml:"http_listen"`
 	LogFile       string `yaml:"log_file"`
 	LogLevel      string `yaml:"log_level"`
+	DSN           string `yaml:"database_url"`
 }
 
 func GetConfiguration(configPath string) (Configuration, error) {
