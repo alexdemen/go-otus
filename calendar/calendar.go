@@ -6,7 +6,7 @@ import (
 	"github.com/alexdemen/go-otus/calendar/internal/config"
 	"github.com/alexdemen/go-otus/calendar/internal/middleware/logger"
 	"github.com/alexdemen/go-otus/calendar/internal/service"
-	"github.com/alexdemen/go-otus/calendar/internal/store"
+	"github.com/alexdemen/go-otus/calendar/internal/store/postgres"
 	flag "github.com/spf13/pflag"
 	"google.golang.org/grpc"
 	"log"
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	storage, err := store.NewPostgres(runConfig.DSN)
+	storage, err := postgres.NewStore(runConfig.DSN)
 	if err != nil {
 		log.Fatal(err)
 	}
