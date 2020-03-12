@@ -15,7 +15,7 @@ type Store interface {
 type Event struct {
 	Id          int64
 	Name        string
-	Description string
+	Description *string
 	StartDate   time.Time
 	Duration    time.Duration
 }

@@ -22,7 +22,7 @@ func TestStore_Add(t *testing.T) {
 
 	event := core.Event{
 		Name:        "Test1",
-		Description: "",
+		Description: nil,
 		StartDate:   start,
 		Duration:    time.Until(start.Add(time.Hour)),
 	}

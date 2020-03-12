@@ -34,7 +34,7 @@ func (p Store) Add(cxt context.Context, event core.Event) (core.Event, error) {
 			values ($1, $2, $3, $4)
 			returning id`
 
-	result, err := p.database.QueryContext(cxt, sql, event.Name, event.Description, event.StartDate, event.Duration)
+	result, err := p.database.QueryContext(cxt, sql, event.Name, *event.Description, event.StartDate, event.Duration)
 	if err != nil {
 		return event, err
 	}
@@ -57,5 +57,25 @@ func (p Store) Remove(cxt context.Context, event core.Event) error {
 }
 
 func (p Store) List(cxt context.Context) ([]core.Event, error) {
+	sql := `select id, name, description, date, duration
+			from events
+			where deleted = false`
+
+	result, err := p.database.QueryContext(cxt, sql)
+	if err != nil {
+		return nil, err
+	}
+
+	events := make([]core.Event, 0)
+
+	for result.Next() {
+		event := core.Event{}
+		err = result.Scan(&event.Id)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
+
 	panic("implement me")
 }
