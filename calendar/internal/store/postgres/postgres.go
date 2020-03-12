@@ -32,12 +32,14 @@ func NewStore(dsn string) (*Store, error) {
 func (p Store) Add(cxt context.Context, event core.Event) (core.Event, error) {
 	sql := `insert into events (name, description, date, duration) 
 			values ($1, $2, $3, $4)
-			returning id`
+			returning id
+		`
 
 	result, err := p.database.QueryContext(cxt, sql, event.Name, event.Description, event.StartDate, event.Duration)
 	if err != nil {
 		return event, err
 	}
+	defer result.Close()
 
 	if result.Next() {
 		err = result.Scan(&event.Id)
