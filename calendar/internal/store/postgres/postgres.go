@@ -51,11 +51,27 @@ func (p Store) Add(cxt context.Context, event core.Event) (core.Event, error) {
 }
 
 func (p Store) Edit(cxt context.Context, event core.Event) error {
-	panic("implement me")
+	sql := ``
+	result, err := p.database.ExecContext(cxt, sql, event.Name, event.Description, event.StartDate, event.Duration, event.Id)
+	if err != nil {
+		return err
+	}
+
+	count, err := result.RowsAffected()
+	if err != nil {
+		return err
+	} else if count == 0 {
+		return errors.New("now affected row")
+	}
+
+	return nil
 }
 
 func (p Store) Remove(cxt context.Context, event core.Event) error {
-	panic("implement me")
+	sql := ``
+
+	_, err := p.database.ExecContext(cxt, sql, event.Id)
+	return err
 }
 
 func (p Store) List(cxt context.Context) ([]core.Event, error) {
@@ -67,17 +83,18 @@ func (p Store) List(cxt context.Context) ([]core.Event, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer result.Close()
 
 	events := make([]core.Event, 0)
 
 	for result.Next() {
 		event := core.Event{}
-		err = result.Scan(&event.Id)
+		err = result.Scan(&event.Id, &event.Name, event.Description, event.StartDate, event.Duration)
 		if err != nil {
 			return nil, err
 		}
 		events = append(events, event)
 	}
 
-	panic("implement me")
+	return events, nil
 }
