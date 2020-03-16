@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"github.com/alexdemen/go-otus/calendar/internal/core"
 	"testing"
 	"time"
@@ -20,15 +21,31 @@ func TestStore_Add(t *testing.T) {
 	}
 	start := time.Date(2020, 3, 11, 18, 30, 0, 0, loc)
 
+	//test := "tea"
 	event := core.Event{
 		Name:        "Test1",
-		Description: nil,
+		Description: nil, //&test,
 		StartDate:   start,
-		Duration:    time.Until(start.Add(time.Hour)),
+		Duration:    start.Add(time.Hour).Sub(start), //Sub(start.Add(time.Hour)),
 	}
 
 	event, err = store.Add(context.Background(), event)
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestStore_List(t *testing.T) {
+	store, err := NewStore("postgres://event_admin:123@localhost:5432/eventsdb")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer store.database.Close()
+
+	data, _ := store.List(context.Background())
+
+	for _, ev := range data {
+		endTime := ev.StartDate.Add(ev.Duration)
+		fmt.Print(endTime)
 	}
 }

@@ -29,13 +29,23 @@ func NewStore(dsn string) (*Store, error) {
 	return &Store{database: db}, nil
 }
 
+func nullStringFromStrPtr(str *string) sql.NullString {
+	var result sql.NullString
+	if str != nil {
+		result.Scan(*str)
+	}
+
+	return result
+}
+
 func (p Store) Add(cxt context.Context, event core.Event) (core.Event, error) {
-	sql := `insert into events (name, description, date, duration) 
+	sqlQuery := `insert into events (name, description, date, duration) 
 			values ($1, $2, $3, $4)
 			returning id
 		`
 
-	result, err := p.database.QueryContext(cxt, sql, event.Name, *event.Description, event.StartDate, event.Duration)
+	result, err := p.database.QueryContext(cxt, sqlQuery, event.Name,
+		nullStringFromStrPtr(event.Description), event.StartDate, event.Duration)
 	if err != nil {
 		return event, err
 	}
@@ -68,18 +78,20 @@ func (p Store) Edit(cxt context.Context, event core.Event) error {
 }
 
 func (p Store) Remove(cxt context.Context, event core.Event) error {
-	sql := ``
+	sqlQuery := `update events
+			set deleted = true
+			where id = $1`
 
-	_, err := p.database.ExecContext(cxt, sql, event.Id)
+	_, err := p.database.ExecContext(cxt, sqlQuery, event.Id)
 	return err
 }
 
 func (p Store) List(cxt context.Context) ([]core.Event, error) {
-	sql := `select id, name, description, date, duration
-			from events
-			where deleted = false`
+	sqlQuery := `select id, name, description, date, duration
+				from events
+				where deleted = false`
 
-	result, err := p.database.QueryContext(cxt, sql)
+	result, err := p.database.QueryContext(cxt, sqlQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -89,9 +101,13 @@ func (p Store) List(cxt context.Context) ([]core.Event, error) {
 
 	for result.Next() {
 		event := core.Event{}
-		err = result.Scan(&event.Id, &event.Name, event.Description, event.StartDate, event.Duration)
+		var description sql.NullString
+		err = result.Scan(&event.Id, &event.Name, &description, &event.StartDate, &event.Duration)
 		if err != nil {
 			return nil, err
+		}
+		if description.Valid {
+			event.Description = &description.String
 		}
 		events = append(events, event)
 	}
