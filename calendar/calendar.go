@@ -6,7 +6,7 @@ import (
 	"github.com/alexdemen/go-otus/calendar/internal/config"
 	"github.com/alexdemen/go-otus/calendar/internal/middleware/logger"
 	"github.com/alexdemen/go-otus/calendar/internal/service"
-	"github.com/alexdemen/go-otus/calendar/internal/store"
+	"github.com/alexdemen/go-otus/calendar/internal/store/postgres"
 	flag "github.com/spf13/pflag"
 	"google.golang.org/grpc"
 	"log"
@@ -27,13 +27,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	grpcServer := grpc.NewServer()
+	storage, err := postgres.NewStore(runConfig.DSN)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	lis, err := net.Listen("tcp", runConfig.ListenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
-	storage := store.NewMemoryStore()
 	var eventServer calendarpb.EventServiceServer = service.NewEventServer(storage)
 	eventServer = logger.NewMiddlewareLogger(eventServer)
 	calendarpb.RegisterEventServiceServer(grpcServer, eventServer)

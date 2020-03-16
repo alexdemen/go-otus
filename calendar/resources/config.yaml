@@ -1,3 +1,4 @@
 http_listen: :9999
+database_url: postgres://otus:123@localhost:5432/eventdb
 log_file: file
 log_level: debug
