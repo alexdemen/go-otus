@@ -61,8 +61,13 @@ func (p Store) Add(cxt context.Context, event core.Event) (core.Event, error) {
 }
 
 func (p Store) Edit(cxt context.Context, event core.Event) error {
-	sql := ``
-	result, err := p.database.ExecContext(cxt, sql, event.Name, event.Description, event.StartDate, event.Duration, event.Id)
+	sqlQuery := `update events
+					set name = $1,
+						description = $2,
+						date = $3,
+						duration = $4
+					where id = $5`
+	result, err := p.database.ExecContext(cxt, sqlQuery, event.Name, event.Description, event.StartDate, event.Duration, event.Id)
 	if err != nil {
 		return err
 	}
