@@ -12,6 +12,10 @@ type Store struct {
 	database *sql.DB
 }
 
+func (p Store) Get(ctx context.Context) ([]core.Event, error) {
+	panic("implement me")
+}
+
 func NewStore(dsn string) (*Store, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {

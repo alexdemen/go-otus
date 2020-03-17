@@ -12,6 +12,10 @@ type Store interface {
 	List(cxt context.Context) ([]Event, error)
 }
 
+type Explorer interface {
+	Get(ctx context.Context) ([]Event, error)
+}
+
 type Event struct {
 	Id          int64
 	Name        string
