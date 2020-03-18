@@ -2,30 +2,76 @@ package scheduler
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/alexdemen/go-otus/calendar/internal/core"
+	"github.com/streadway/amqp"
 	"time"
 )
 
-func ScheduleEvent(cxt context.Context, store core.Explorer) {
-	tikChan := time.Tick(30 * time.Minute)
-
-	select {
-	case <-tikChan:
-		discover(cxt, store)
-	case <-cxt.Done():
-		return
-
-	}
+type Scheduler struct {
+	//conn *amqp.Connection
+	//channel *amqp.Channel
+	source core.Explorer
+	url    string
 }
 
-func discover(cxt context.Context, exp core.Explorer) error {
-	events, err := exp.Get(cxt)
+func NewScheduler(source core.Explorer, url string) *Scheduler {
+	return &Scheduler{source: source, url: url}
+}
+
+func (s *Scheduler) run(cxt context.Context) {
+	ticker := time.Tick(30 * time.Second)
+
+	go func() {
+		for {
+			select {
+			case <-ticker:
+				notify(cxt, s.source, s.url)
+			case <-cxt.Done():
+				return
+			}
+		}
+	}()
+}
+
+func notify(ctx context.Context, source core.Explorer, url string) error {
+	data, err := source.Get(ctx)
 	if err != nil {
 		return err
 	}
 
-	if len(events) == 0 {
-		return nil
+	conn, err := amqp.Dial(url)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	channel, err := conn.Channel()
+	if err != nil {
+		return err
+	}
+	defer channel.Close()
+
+	q, err := channel.QueueDeclare("event", false, false, false, false, nil)
+	if err != nil {
+		return err
+	}
+
+	for _, msg := range data {
+		body, err := json.Marshal(msg)
+		if err != nil {
+			return err
+		}
+
+		err = channel.Publish("", q.Name, false, false,
+			amqp.Publishing{
+				ContentType: "text/plain",
+				Body:        body,
+			})
+
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
