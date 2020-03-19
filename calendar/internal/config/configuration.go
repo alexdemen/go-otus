@@ -14,24 +14,46 @@ type Configuration struct {
 	DSN           string `yaml:"database_url"`
 }
 
-func GetConfiguration(configPath string) (Configuration, error) {
-	configuration := Configuration{}
+type QueryConfig struct {
+	QueryUrl string `yaml:"rabbit_url"`
+}
+
+func GetConfiguration(config interface{}, configPath string) error {
 	err := checkConfigFile(configPath)
 	if err != nil {
-		return configuration, err
+		return err
 	}
 
 	configData, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		return configuration, err
+		return err
 	}
 
-	err = yaml.Unmarshal(configData, &configuration)
+	err = yaml.Unmarshal(configData, &config)
 	if err != nil {
-		return configuration, err
+		return err
 	}
 
-	return configuration, nil
+	return nil
+}
+
+func GetQueryConfiguration(config *QueryConfig, configPath string) error {
+	err := checkConfigFile(configPath)
+	if err != nil {
+		return err
+	}
+
+	configData, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(configData, config)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func checkConfigFile(configPath string) error {

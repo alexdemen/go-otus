@@ -9,8 +9,6 @@ import (
 )
 
 type Scheduler struct {
-	//conn *amqp.Connection
-	//channel *amqp.Channel
 	source core.Explorer
 	url    string
 }
@@ -52,7 +50,13 @@ func notify(ctx context.Context, source core.Explorer, url string) error {
 	}
 	defer channel.Close()
 
-	q, err := channel.QueueDeclare("event", false, false, false, false, nil)
+	q, err := channel.QueueDeclare(
+		"event",
+		false,
+		false,
+		false,
+		false,
+		nil)
 	if err != nil {
 		return err
 	}
