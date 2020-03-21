@@ -3,6 +3,7 @@ package scheduler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/alexdemen/go-otus/calendar/internal/core"
 	"github.com/streadway/amqp"
 	"time"
@@ -17,14 +18,17 @@ func NewScheduler(source core.Explorer, url string) *Scheduler {
 	return &Scheduler{source: source, url: url}
 }
 
-func (s *Scheduler) run(cxt context.Context) {
+func (s *Scheduler) Run(cxt context.Context) {
 	ticker := time.Tick(30 * time.Second)
 
 	go func() {
 		for {
 			select {
 			case <-ticker:
-				notify(cxt, s.source, s.url)
+				err := notify(cxt, s.source, s.url)
+				if err != nil {
+					fmt.Println(err)
+				}
 			case <-cxt.Done():
 				return
 			}

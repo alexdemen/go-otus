@@ -12,13 +12,14 @@ type Configuration struct {
 	LogFile       string `yaml:"log_file"`
 	LogLevel      string `yaml:"log_level"`
 	DSN           string `yaml:"database_url"`
+	QueryUrl      string `yaml:"rabbit_url"`
 }
 
 type QueryConfig struct {
 	QueryUrl string `yaml:"rabbit_url"`
 }
 
-func GetConfiguration(config interface{}, configPath string) error {
+func GetConfiguration(config *Configuration, configPath string) error {
 	err := checkConfigFile(configPath)
 	if err != nil {
 		return err
