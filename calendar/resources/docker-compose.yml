@@ -10,3 +10,10 @@ services:
     - 5432:5432
     environment:
       - POSTGRES_PASSWORD=docker
+
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3-management
+    ports:
+    - 5672:5672
+    - 15672:15672

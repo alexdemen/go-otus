@@ -83,7 +83,7 @@ func convertToPB(event core.Event) (*calendarpb.Event, error) {
 	return &calendarpb.Event{
 		Id:          event.Id,
 		Name:        event.Name,
-		Description: event.Description,
+		Description: *event.Description,
 		StartDate:   startDate,
 		Duration:    duration,
 	}, nil
@@ -98,10 +98,14 @@ func convertFromPB(event calendarpb.Event) (core.Event, error) {
 	if err != nil {
 		return core.Event{}, err
 	}
+	var desc *string
+	if len(event.Description) != 0 {
+		*desc = event.Description
+	}
 	return core.Event{
 		Id:          event.Id,
 		Name:        event.Name,
-		Description: event.Description,
+		Description: desc,
 		StartDate:   startDate,
 		Duration:    duration,
 	}, nil

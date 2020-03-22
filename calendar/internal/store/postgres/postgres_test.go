@@ -1,6 +1,5 @@
 package postgres
 
-/*
 import (
 	"context"
 	"fmt"
@@ -59,7 +58,7 @@ func TestStore_Remove(t *testing.T) {
 	defer store.database.Close()
 
 	event := core.Event{
-		Id: 10,
+		Id:          10,
 		Name:        "Test1",
 		Description: nil, //&test,
 	}
@@ -82,7 +81,7 @@ func TestStore_Edit(t *testing.T) {
 
 	test := "tea"
 	event := core.Event{
-		Id: 10,
+		Id:          10,
 		Name:        "Test2",
 		Description: &test,
 		StartDate:   start,
@@ -91,4 +90,3 @@ func TestStore_Edit(t *testing.T) {
 
 	store.Edit(context.Background(), event)
 }
-*/

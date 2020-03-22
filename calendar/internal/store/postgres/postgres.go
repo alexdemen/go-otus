@@ -12,6 +12,10 @@ type Store struct {
 	database *sql.DB
 }
 
+func (p Store) Get(ctx context.Context) ([]core.Event, error) {
+	return p.List(ctx)
+}
+
 func NewStore(dsn string) (*Store, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
@@ -92,8 +96,8 @@ func (p Store) Remove(cxt context.Context, event core.Event) error {
 }
 
 func (p Store) List(cxt context.Context) ([]core.Event, error) {
-	sqlQuery := `select id, name, description, date, duration
-				from events
+	sqlQuery := `select id, name, description, date, duration 
+				from events 
 				where deleted = false`
 
 	result, err := p.database.QueryContext(cxt, sqlQuery)
