@@ -19,6 +19,11 @@ type QueryConfig struct {
 	QueryUrl string `yaml:"rabbit_url"`
 }
 
+type SchedulerConfig struct {
+	DSN      string `yaml:"database_url"`
+	QueryUrl string `yaml:"rabbit_url"`
+}
+
 func GetConfiguration(config *Configuration, configPath string) error {
 	err := checkConfigFile(configPath)
 	if err != nil {
@@ -39,6 +44,25 @@ func GetConfiguration(config *Configuration, configPath string) error {
 }
 
 func GetQueryConfiguration(config *QueryConfig, configPath string) error {
+	err := checkConfigFile(configPath)
+	if err != nil {
+		return err
+	}
+
+	configData, err := ioutil.ReadFile(configPath)
+	if err != nil {
+		return err
+	}
+
+	err = yaml.Unmarshal(configData, config)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetSchedulerConfiguration(config interface{}, configPath string) error {
 	err := checkConfigFile(configPath)
 	if err != nil {
 		return err
