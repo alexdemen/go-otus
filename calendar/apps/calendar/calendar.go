@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/alexdemen/go-otus/calendar/internal/calendarpb"
 	"github.com/alexdemen/go-otus/calendar/internal/config"
 	"github.com/alexdemen/go-otus/calendar/internal/middleware/logger"
-	"github.com/alexdemen/go-otus/calendar/internal/scheduler"
 	"github.com/alexdemen/go-otus/calendar/internal/service"
 	"github.com/alexdemen/go-otus/calendar/internal/store/postgres"
 	flag "github.com/spf13/pflag"
@@ -35,9 +33,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	sched := scheduler.NewScheduler(storage, runConfig.QueryUrl)
-	go sched.Run(context.Background())
 
 	lis, err := net.Listen("tcp", runConfig.ListenAddress)
 	if err != nil {
