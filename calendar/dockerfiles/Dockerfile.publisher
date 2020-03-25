@@ -1,0 +1,5 @@
+FROM alpine:3.11.5
+WORKDIR /app
+COPY ../bin/publisher .
+COPY ../resources/config.yaml .
+CMD ["./publisher", "--config", "config.yaml"]
