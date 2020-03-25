@@ -1,0 +1,6 @@
+FROM ubuntu
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY bin/publisher .
+COPY resources/config.yaml .
+CMD ["./publisher", "--config" , "./config.yaml"]

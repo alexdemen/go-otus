@@ -18,17 +18,18 @@ services:
     image: rabbitmq:3-management
     ports:
     - 15672:15672
+    - 5672:5672
     networks:
       - query
 
-  publisher:
-    build:
-      dockerfile: ./Dockerfile.publisher
-    container_name: event-publisher
-    depends_on:
-      - rabbit
-    networks:
-      - query
+#  publisher:
+#    build:
+#      dockerfile: ./Dockerfile.publisher
+#    container_name: event-publisher
+#    depends_on:
+#      - rabbit
+#    networks:
+#      - query
 
 networks:
   db:
