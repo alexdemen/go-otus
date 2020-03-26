@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: pg-docker
+    image: postgres
+    volumes:
+    - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
+    ports:
+    - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=docker
+    networks:
+      - db
+
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3-management
+    ports:
+    - 15672:15672
+    - 5672:5672
+    networks:
+      - query
+
+  publisher:
+    build:
+      context: ./apps/publisher
+      dockerfile: Dockerfile.publisher
+    container_name: event-publisher
+    depends_on:
+      - rabbit
+    networks:
+      - query
+
+  scheduler:
+    build:
+      context: ./apps/scheduler
+      dockerfile: Dockerfile.scheduler
+    container_name: event-scheduler
+    depends_on:
+      - rabbit
+      - postgres
+    networks:
+      - query
+      - db
+
+  calendar-api:
+    build:
+      context: ./apps/calendar
+      dockerfile: Dockerfile.calendar
+    container_name: event-api
+    depends_on:
+      - postgres
+    networks:
+      - db
+    ports:
+      - 8888:8888
+
+networks:
+  db:
+    driver: bridge
+  query:
+    driver: bridge

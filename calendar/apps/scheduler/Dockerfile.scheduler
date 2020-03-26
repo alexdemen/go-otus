@@ -1,0 +1,6 @@
+FROM ubuntu
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY ./bin/scheduler .
+COPY ./config.yaml .
+CMD ["./scheduler", "--config" , "./config.yaml"]
