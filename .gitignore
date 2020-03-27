@@ -13,3 +13,6 @@
 
 .idea/
 /calendar/bin/
+/calendar/apps/calendar/bin/
+/calendar/apps/publisher/bin/
+/calendar/apps/scheduler/bin/
