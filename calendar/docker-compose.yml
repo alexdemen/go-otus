@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 
 services:
   postgres:
@@ -21,6 +21,13 @@ services:
     - 5672:5672
     networks:
       - query
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15672"]
+      start_period: 10s
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      disable: true
 
   publisher:
     build:
