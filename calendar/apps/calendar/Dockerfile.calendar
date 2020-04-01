@@ -1,6 +1,0 @@
-FROM ubuntu
-RUN mkdir /opt/app
-WORKDIR /opt/app
-COPY ./bin/calendar .
-COPY ./config.yaml .
-CMD ["./calendar", "--config", "config.yaml"]

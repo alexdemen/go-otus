@@ -1,0 +1,7 @@
+FROM ubuntu
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY ./apps/calendar/bin/calendar .
+COPY ./dockerfiles/config.yaml .
+COPY ./dockerfiles/wait-for-start.sh .
+CMD ["./wait-for-start.sh", "postgres:5432", "--timeout=30", "--", "./calendar", "--config" , "./config.yaml"]

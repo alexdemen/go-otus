@@ -1,0 +1,7 @@
+FROM ubuntu
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY ./apps/publisher/bin/publisher .
+COPY ./dockerfiles/config.yaml .
+COPY ./dockerfiles/wait-for-start.sh .
+CMD ["./wait-for-start.sh", "rabbit:5672", "--timeout=30", "--", "./publisher", "--config" , "./config.yaml"]

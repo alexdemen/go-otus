@@ -1,8 +1,8 @@
-version: '3.4'
+version: '2.4'
 
 services:
   postgres:
-    container_name: pg-docker
+    container_name: postgres
     image: postgres
     volumes:
     - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
@@ -21,18 +21,11 @@ services:
     - 5672:5672
     networks:
       - query
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      start_period: 10s
-      interval: 20s
-      timeout: 5s
-      retries: 5
-      disable: true
 
   publisher:
     build:
-      context: ./apps/publisher
-      dockerfile: Dockerfile.publisher
+      context: .
+      dockerfile: dockerfiles/Dockerfile.publisher
     container_name: event-publisher
     depends_on:
       - rabbit
@@ -41,8 +34,8 @@ services:
 
   scheduler:
     build:
-      context: ./apps/scheduler
-      dockerfile: Dockerfile.scheduler
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.scheduler
     container_name: event-scheduler
     depends_on:
       - rabbit
@@ -53,15 +46,15 @@ services:
 
   calendar-api:
     build:
-      context: ./apps/calendar
-      dockerfile: Dockerfile.calendar
+      context: .
+      dockerfile: dockerfiles/Dockerfile.calendar
     container_name: event-api
     depends_on:
       - postgres
     networks:
       - db
     ports:
-      - 8888:8888
+      - 8888:9999
 
 networks:
   db:

@@ -1,0 +1,7 @@
+FROM ubuntu
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY ./apps/scheduler/bin/scheduler .
+COPY ./dockerfiles/config.yaml .
+COPY ./dockerfiles/wait-for-start.sh .
+CMD ["./wait-for-start.sh", "rabbit:5672", "--timeout=30", "--", "./scheduler", "--config" , "./config.yaml"]

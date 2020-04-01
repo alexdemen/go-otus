@@ -34,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	lis, err := net.Listen("tcp", "8888")
+	lis, err := net.Listen("tcp", runConfig.ListenAddress)
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
 	}

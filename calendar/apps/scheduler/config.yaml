@@ -1,5 +1,0 @@
-http_listen: :9999
-database_url: postgres://event_admin:123@postgres:5432/eventsdb
-log_file: file
-log_level: debug
-rabbit_url: amqp://guest:guest@rabbit:5672/
