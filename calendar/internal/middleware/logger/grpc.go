@@ -2,7 +2,7 @@ package logger
 
 import (
 	"context"
-	"github.com/alexdemen/go-otus/calendar/internal/calendarpb"
+	"github.com/alexdemen/go-otus/calendar/pkg/calendarpb"
 )
 
 type GRPCLogger struct {

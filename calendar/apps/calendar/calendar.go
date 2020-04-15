@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/alexdemen/go-otus/calendar/internal/calendarpb"
 	"github.com/alexdemen/go-otus/calendar/internal/config"
 	"github.com/alexdemen/go-otus/calendar/internal/middleware/logger"
 	"github.com/alexdemen/go-otus/calendar/internal/service"
 	"github.com/alexdemen/go-otus/calendar/internal/store/postgres"
+	"github.com/alexdemen/go-otus/calendar/pkg/calendarpb"
 	flag "github.com/spf13/pflag"
 	"google.golang.org/grpc"
 	"log"
