@@ -1,10 +1,8 @@
-CREATE USER event_admin
-LOGIN
-password '123';
-
-
-create database eventsdb owner event_admin;
-
+-- CREATE USER event_admin
+-- LOGIN
+-- password '123';
+--
+-- create database eventsdb owner event_admin;
 
 -- auto-generated definition
 create table events
