@@ -1,0 +1,66 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    volumes:
+#    - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
+    - ./migrations:/docker-entrypoint-initdb.d
+    ports:
+    - 5432:5432
+    environment:
+      - POSTGRES_USER=event_admin
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=eventsdb
+    networks:
+      - db
+
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3-management
+    ports:
+    - 15672:15672
+    - 5672:5672
+    networks:
+      - query
+
+  publisher:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.publisher
+    container_name: event-publisher
+    depends_on:
+      - rabbit
+    networks:
+      - query
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile.scheduler
+    container_name: event-scheduler
+    depends_on:
+      - rabbit
+      - postgres
+    networks:
+      - query
+      - db
+
+  calendar-api:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.calendar
+    container_name: event-api
+    depends_on:
+      - postgres
+    networks:
+      - db
+    ports:
+      - 8888:9999
+
+networks:
+  db:
+    driver: bridge
+  query:
+    driver: bridge

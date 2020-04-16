@@ -1,5 +1,7 @@
-FROM alpine:3.11.5
-WORKDIR /app
-COPY ../bin/scheduler .
-COPY ../resources/config.yaml .
-CMD ["./scheduler", "--config", "config.yaml"]
+FROM ubuntu
+RUN mkdir /opt/app
+WORKDIR /opt/app
+COPY ./apps/scheduler/bin/scheduler .
+COPY ./dockerfiles/config.yaml .
+COPY ./dockerfiles/wait-for-start.sh .
+CMD ["./wait-for-start.sh", "rabbit:5672", "--timeout=30", "--", "./scheduler", "--config" , "./config.yaml"]

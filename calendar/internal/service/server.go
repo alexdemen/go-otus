@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/alexdemen/go-otus/calendar/internal/calendarpb"
 	"github.com/alexdemen/go-otus/calendar/internal/core"
+	"github.com/alexdemen/go-otus/calendar/pkg/calendarpb"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
